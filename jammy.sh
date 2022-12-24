@@ -27,13 +27,13 @@ gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
 gsettings set org.gnome.shell.extensions.dash-to-dock scroll-action 'cycle-windows'
 gsettings set org.gnome.shell.extensions.dash-to-dock show-mounts 'false'
 gsettings set org.gnome.shell.extensions.ding show-home 'false'
-gsettings set org.gnome.shell favorite-apps '["org.gnome.Terminal.desktop", "org.gnome.Nautilus.desktop", "google-chrome.desktop", "code.desktop"]'
+gsettings set org.gnome.shell favorite-apps '["org.gnome.Terminal.desktop", "org.gnome.Nautilus.desktop", "code.desktop"]'
 
-# Change wallpaper (https://www.reddit.com/r/wallpaper/comments/s8ku2j/sunrise_2560x1440/)
+# Change wallpaper (https://i.redd.it/4670vh8vn6791.jpg)
 
-wget 'https://i.redd.it/wphlh5f5xuc81.png' -P "$HOME/Pictures/Wallpapers"
-gsettings set org.gnome.desktop.background picture-uri "file://$HOME/Pictures/Wallpapers/wphlh5f5xuc81.png"
-gsettings set org.gnome.desktop.background picture-uri-dark "file://$HOME/Pictures/Wallpapers/wphlh5f5xuc81.png"
+wget 'https://i.redd.it/4670vh8vn6791.jpg' -P "$HOME/Pictures/Wallpapers"
+gsettings set org.gnome.desktop.background picture-uri "file://$HOME/Pictures/Wallpapers/4670vh8vn6791.png"
+gsettings set org.gnome.desktop.background picture-uri-dark "file://$HOME/Pictures/Wallpapers/4670vh8vn6791.png"
 
 # Disable OS selection menu to increase boot up speed (not recommended for multiple OS)
 
@@ -92,8 +92,19 @@ tee -a \
 
 # // UPDATE
 
-wget https://dl.google.com/linux/linux_signing_key.pub -qO - | sudo gpg --dearmor -o /usr/share/keyrings/google.gpg
-sudo tee '/etc/apt/sources.list.d/google-chrome.list' > /dev/null <<< 'deb [arch=amd64 signed-by=/usr/share/keyrings/google.gpg] https://dl.google.com/linux/chrome/deb/ stable main'
+# Change this command to choose a distro manually.
+distro=$(if echo " bullseye focal impish jammy uma una vanessa" | grep -q " $(lsb_release -sc) "; then echo $(lsb_release -sc); else echo focal; fi)
+
+wget -O- https://deb.librewolf.net/keyring.gpg | sudo gpg --dearmor -o /usr/share/keyrings/librewolf.gpg
+
+sudo tee /etc/apt/sources.list.d/librewolf.sources << EOF > /dev/null
+Types: deb
+URIs: https://deb.librewolf.net
+Suites: $distro
+Components: main
+Architectures: amd64
+Signed-By: /usr/share/keyrings/librewolf.gpg
+EOF
 
 wget https://packages.microsoft.com/keys/microsoft.asc -qO - | sudo gpg --dearmor -o /usr/share/keyrings/microsoft.gpg
 sudo tee '/etc/apt/sources.list.d/vscode.list' > /dev/null <<< 'deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main'
@@ -113,7 +124,7 @@ sudo apt install -y \
     code \
     flatpak \
     git \
-    google-chrome-stable \
+    librewolf \
     timeshift
 
 sudo tee -a '/etc/sysctl.conf' > /dev/null <<< 'fs.inotify.max_user_watches = 524288'
